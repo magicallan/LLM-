@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>QA问答解析器</title>
+  <link href="https://unpkg.com/vuesax@4.0.1-alpha.16/dist/vuesax.min.css" rel="stylesheet">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script type="text/javascript" src="../static/js/vue.js"></script>
+  <style>
+   * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0db7e2;
+      font-size: 36px;
+      margin-top: 20px;
+    }
+
+    p {
+      text-align: center;
+      color: #235965;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .input-group,
+    .output-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      width: 15%;
+      color: white;
+      font-size: 18px;
+    }
+
+    textarea {
+      width: 90%;
+      height: 200px;
+      resize: none;
+      border: 2px solid rgb(255, 255, 255);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+    }
+
+    button {
+      width: 100px;
+      height: 40px;
+      border: none;
+      border-radius: 10px;
+      background-color: rgba(245, 245, 245, 0.42);
+      color: #091541;
+      font-size: 18px;
+      cursor: pointer;
+      margin: 0 10px;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    #app {
+      height: 100vh;
+      background-image: url("../static/background.jpg"); /* 这是一个优美的背景图片，你可以根据你的喜好更换 */
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* 新增的样式 */
+    .slider-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .slider {
+      width: 80%;
+      height: 10px;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.43);
+      -webkit-appearance: none;
+      outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      background-color: #4d8ea4;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .slider-value {
+      width: 10%;
+      color: #041e5b;
+      font-size: 18px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <h1>QA问答解析器</h1>
+      <p>单选题，多选题都支持分析哦！</p>
+      <div class="input-group">
+        <label for="input">问题：</label>
+        <textarea id="input" v-model="input" placeholder="请输入问题的题干" @keydown.enter="generate"></textarea>
+      </div>
+      <!-- 新增的显示器 -->
+      <div class="input-group">
+        <label for="language">语言：</label>
+          <label>
+              中文
+              <input type="radio" value="Chinese" v-model="language" name="language"/>
+          </label>
+          <label>
+              English
+              <input type="radio" value="English" v-model="language" name="language"/>
+          </label>
+      </div>
+       <div class="input-group">
+        <label for="type">类型：</label>
+          <label>
+              单选
+              <input type="radio" value="单选" v-model="type" name="type"/>
+          </label>
+           <label>
+              多选
+              <input type="radio" value="多选" v-model="type" name="type"/>
+          </label>
+      </div>
+        <div class="input-group">
+        <label for="input">选项：</label>
+        <textarea id="input" v-model="options" placeholder="请输入问题的选项" @keydown.enter="generate"></textarea>
+      </div>
+      <div class="button-group">
+        <button @click="generate">生成</button>
+        <button @click="reset">重置</button>
+      </div>
+      <br>
+      <div class="output-group">
+        <label for="output">解析：</label>
+        <textarea id="output" v-model="output" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</body>
+  <script type="text/javascript"></script>
+  <script src="../static/js/vue.js"></script>
+  <script src="https://unpkg.com/vuesax@4.0.1-alpha.16/dist/vuesax.min.js"></script>
+  <script>
+    const vm = new Vue({
+      el: "#app",
+      data: {
+          input: "",
+          output: "",
+          language: "",
+          type: "",
+          options: "",
+      },
+      methods: {
+       generate() {
+          // 调用后端的transformer模型，传入input，length，nsamples，返回output
+          // 这里只是一个示例，你需要根据你的实际情况修改
+          // 前端参数与后端预测函数连接的过程如下：
+          // 1. 使用XMLHttpRequest对象创建一个异步的HTTP请求，指定请求的方法（POST）、URL（后端的接口地址）和数据类型（JSON）
+          // 2. 设置请求的回调函数，当请求的状态发生变化时，根据响应的状态码和数据，更新output的值或者显示错误信息
+          // 3. 发送请求，将input，length，nsamples作为请求的数据，使用JSON.stringify()方法将其转换为JSON格式的字符串
+          let xhr = new XMLHttpRequest();
+          xhr.open("POST", "http://127.0.0.1:8000/predicts/", true);
+          xhr.responseType = "json";
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                this.output = xhr.response.output;
+              } else {
+                this.output = "请求失败，请稍后重试。";
+              }
+            }
+          };
+          xhr.send(JSON.stringify({input: this.input, language: this.language, type: this.type, options: this.options}));
+        },
+        reset() {
+          // 清空输入和输出
+          this.input = "";
+          this.output = "";
+          this.options = "";
+        },
+      },
+    });
+  </script>
+</html>
